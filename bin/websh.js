@@ -1,4 +1,5 @@
 // bash-like terminal for web
+export { bash_init }
 
 // HTML
 document.body.innerHTML += '<textarea type="text" id="websh" readonly></textarea>'
@@ -112,6 +113,8 @@ function salute () {
 	stdout('root@zoso:~#')
 }
 
-salute()
-readmode()
+function bash_init () {
+	salute()
+	readmode()
+}
 
