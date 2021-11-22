@@ -1,33 +1,61 @@
 // bash-like terminal for web
 
-//rendering initial screen
-//styles
+// HTML
 document.body.innerHTML += '<textarea type="text" id="websh" readonly></textarea>'
-webshdiv = document.getElementById('websh')
-webshdiv.style.minWidth = '400px'
-webshdiv.style.minHeight = '300px'
-webshdiv.style.backgroundColor = 'black'
-webshdiv.style.color = 'white'
-
-//dataflow
-stdout_perm = ''
-stdin_cache = ''
-pointer_revpos = 0
-function pointer_pos () { return stdin_cache.length - pointer_revpos -1}
-function core () { return webshdiv.innerHTML }
-
-function update() {
-	webshdiv.innerHTML = stdout_perm + stdin_cache
-}
-
+websh = document.getElementById('websh')
 function scroll_bottom () {
-	webshdiv.scrollTop = webshdiv.scrollHeight
+	websh.scrollTop = websh.scrollHeight
 }
 
-function stdout (content) {
+// CSS
+websh.style.minWidth = '400px'
+websh.style.minHeight = '300px'
+websh.style.backgroundColor = 'black'
+websh.style.color = 'white'
+
+
+// text storage and rendering
+stdout_perm = '' // terminal's imutable part
+stdin_cache = '' // the part user may edit
+total_text = () => stdout_perm + stdin_cache  // what must be written on screen
+function update() {  // refreshing screen
+	websh.innerHTML = total_text()
+}
+
+// keyboard pointer
+pointer_revpos = 0 // where the pointer is (backwards)
+pointer_pos = () => stdin_cache.length - pointer_revpos-1 // where it actually is on cache string
+
+
+// changing data
+function stdout (content) { // register user's input into permanent part
 	stdout_perm += content
 }
 
+function breakline () {
+	stdout('\n')
+	pointer_revpos = 0
+}
+
+function printl (content) { // print and breakline at once
+	stdout(content)
+	breakline()
+}
+
+function addchar(arg) { // writing on cache part (based on pointer)
+	let a = stdin_cache.slice(0, pointer_pos()+1)
+	let b = stdin_cache.slice(pointer_pos()+1, stdin_cache.length)
+	stdin_cache = a + arg + b
+}
+
+function deletechar(isDel = 0) { // backspace or delete effect, based on pointer and at cache part
+	let a = stdin_cache.substring(0, pointer_pos() + isDel)
+	let b = stdin_cache.substring(pointer_pos() + 1 + isDel, stdin_cache.length)
+	stdin_cache = a + b
+	pointer_revpos -= isDel
+}
+
+//keyboard interaction
 function readmode() {
 	update()
 	document.addEventListener('keydown', (k) => {
@@ -75,29 +103,6 @@ function readmode() {
 	})
 }
 
-function addchar(arg) {
-	let a = stdin_cache.slice(0, pointer_pos()+1)
-	let b = stdin_cache.slice(pointer_pos()+1, stdin_cache.length)
-	stdin_cache = a + arg + b
-}
-
-function deletechar(isDel = 0) {
-	let a = stdin_cache.substring(0, pointer_pos() + isDel)
-	let b = stdin_cache.substring(pointer_pos() + 1 + isDel, stdin_cache.length)
-	stdin_cache = a + b
-	pointer_revpos -= isDel
-}
-
-function breakline () {
-	stdout('\n')
-	pointer_revpos = 0
-}
-
-function printl (content) {
-	stdout(content)
-	breakline()
-}
-
 function submitsh (content) {
 	printl(content)
 	salute()
@@ -109,3 +114,4 @@ function salute () {
 
 salute()
 readmode()
+
