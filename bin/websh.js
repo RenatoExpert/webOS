@@ -20,6 +20,10 @@ function update() {
 	webshdiv.innerHTML = stdout_perm + stdin_cache
 }
 
+function scroll_bottom () {
+	webshdiv.scrollTop = webshdiv.scrollHeight
+}
+
 function stdout (content) {
 	stdout_perm += content
 }
@@ -27,6 +31,7 @@ function stdout (content) {
 function readmode() {
 	update()
 	document.addEventListener('keydown', (k) => {
+		scroll_bottom()
 		switch (k.key) {
 			case 'Enter':
 				submitsh(stdin_cache)
