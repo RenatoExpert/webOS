@@ -4,7 +4,7 @@
 // step2. if no config is storaged, get the template config
 // step3. prompt login shell
 
-import { shellscreen } from '/lib/modules/egg/kernel/drivers/prompt_driver.js'
+import { shellscreen } from '../lib/modules/egg/kernel/drivers/prompt_driver.js'
 
 boot()
 
